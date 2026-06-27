@@ -1,0 +1,22 @@
+<Window x:Class="ScadaGUI.WriteValueWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Upiši vrijednost" Height="180" Width="320"
+        WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <TextBlock x:Name="lblInfo" Grid.Row="0" Margin="0,0,0,12" TextWrapping="Wrap"/>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,16">
+            <TextBlock Text="Nova vrijednost:" Width="120" VerticalAlignment="Center"/>
+            <TextBox x:Name="txtValue" Width="130"/>
+        </StackPanel>
+        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Upiši" Width="80" Height="28" Margin="0,0,10,0" Click="BtnWrite_Click"/>
+            <Button Content="Otkaži" Width="80" Height="28" Click="BtnCancel_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

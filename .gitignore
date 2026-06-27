@@ -1,0 +1,10 @@
+.vs/
+bin/
+obj/
+*.user
+packages/
+*.suo
+*.log
+*.cfg
+*.json
+report*.txt

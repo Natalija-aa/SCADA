@@ -1,0 +1,92 @@
+<Window x:Class="ScadaGUI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:ScadaGUI"
+        Title="SCADA Aplikacija" Height="600" Width="1000"
+        Closing="Window_Closing">
+    <Window.Resources>
+        <Style x:Key="AlarmRowStyle" TargetType="DataGridRow">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding AlarmStatus}" Value="Active">
+                    <Setter Property="Background" Value="Red"/>
+                    <Setter Property="Foreground" Value="White"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding AlarmStatus}" Value="Acknowledged">
+                    <Setter Property="Background" Value="Yellow"/>
+                    <Setter Property="Foreground" Value="Black"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <BooleanToVisibilityConverter x:Key="BoolVis"/>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <!-- Toolbar -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="8,8,8,4">
+            <Button Content="Add" Width="70" Height="30" Margin="2" Click="BtnAdd_Click"/>
+            <Button Content="Obriši tag" Width="80" Height="30" Margin="2" Click="BtnDeleteTag_Click"/>
+            <Button Content="Report" Width="70" Height="30" Margin="2" Click="BtnReport_Click"/>
+            <Separator Width="10"/>
+            <Button Content="Export Config" Width="100" Height="30" Margin="2" Click="BtnExport_Click"/>
+            <Button Content="Import Config" Width="100" Height="30" Margin="2" Click="BtnImport_Click"/>
+            <Button Content="Trace Settings" Width="110" Height="30" Margin="2" Click="BtnTraceSettings_Click"/>
+        </StackPanel>
+
+        <!-- Tag lista -->
+        <DataGrid Grid.Row="1" x:Name="dgTags"
+                  AutoGenerateColumns="False"
+                  IsReadOnly="True"
+                  SelectionMode="Single"
+                  RowStyle="{StaticResource AlarmRowStyle}"
+                  Margin="8,4,8,4"
+                  CanUserAddRows="False">
+            <DataGrid.Resources>
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#6600AAFF"/>
+                <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black"/>
+                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="#3300AAFF"/>
+                <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightTextBrushKey}" Color="Black"/>
+            </DataGrid.Resources>
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Ime" Binding="{Binding Name}" Width="120"/>
+                <DataGridTextColumn Header="Tip" Binding="{Binding TagType}" Width="45"/>
+                <DataGridTextColumn Header="Opis" Binding="{Binding Description}" Width="160"/>
+                <DataGridTextColumn Header="I/O Adresa" Binding="{Binding IOAddress}" Width="90"/>
+                <DataGridTextColumn Header="Trenutna vrijednost" Binding="{Binding CurrentValue, StringFormat=F3}" Width="140"/>
+                <DataGridTemplateColumn Header="Akcije" Width="*">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <StackPanel Orientation="Horizontal">
+                                <Button Content="Details"
+                                        Visibility="{Binding IsAI, Converter={StaticResource BoolVis}}"
+                                        Width="65" Height="22" Margin="2"
+                                        Click="BtnDetails_Click" Tag="{Binding}"/>
+                                <Button Content="Write"
+                                        Visibility="{Binding IsOutput, Converter={StaticResource BoolVis}}"
+                                        Width="50" Height="22" Margin="2"
+                                        Click="BtnWrite_Click" Tag="{Binding}"/>
+                                <Button x:Name="btnScan"
+                                        Content="{Binding ScanBtnText}"
+                                        Visibility="{Binding IsInput, Converter={StaticResource BoolVis}}"
+                                        Width="90" Height="22" Margin="2"
+                                        Click="BtnScan_Click" Tag="{Binding}"/>
+                            </StackPanel>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+
+        <!-- Status bar -->
+        <StatusBar Grid.Row="2">
+            <StatusBarItem>
+                <TextBlock x:Name="lblStatus" Text="Spreman."/>
+            </StatusBarItem>
+        </StatusBar>
+    </Grid>
+</Window>

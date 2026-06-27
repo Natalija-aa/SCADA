@@ -1,0 +1,32 @@
+<Window x:Class="ScadaGUI.LoginWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="SCADA - Prijava" Height="200" Width="320"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="NoResize">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,10">
+            <TextBlock Text="Korisničko ime:" Width="120" VerticalAlignment="Center"/>
+            <TextBox x:Name="txtUsername" Width="150"/>
+        </StackPanel>
+
+        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,16">
+            <TextBlock Text="Lozinka:" Width="120" VerticalAlignment="Center"/>
+            <PasswordBox x:Name="pwdPassword" Width="150"/>
+        </StackPanel>
+
+        <TextBlock x:Name="lblError" Grid.Row="2" Foreground="Red" Margin="0,0,0,8" Text=""/>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button Content="Prijava" Width="80" Height="28" Margin="0,0,8,0" Click="BtnLogin_Click"/>
+            <Button Content="Odustani" Width="80" Height="28" Click="BtnCancel_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>

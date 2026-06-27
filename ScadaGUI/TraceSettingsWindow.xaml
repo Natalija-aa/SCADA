@@ -1,0 +1,41 @@
+<Window x:Class="ScadaGUI.TraceSettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Trace Settings - Podešavanja logova"
+        Height="340" Width="330"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize">
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0"
+                   Text="Odaberite tipove logova koji se upisuju u system.log:"
+                   FontWeight="Bold" TextWrapping="Wrap" Margin="0,0,0,12"/>
+
+        <StackPanel Grid.Row="1">
+            <CheckBox x:Name="chkTagCUD"           Content="Dodavanje/uklanjanje taga"       Margin="0,5"/>
+            <CheckBox x:Name="chkTagUpdate"         Content="Ažuriranje taga"                 Margin="0,5"/>
+            <CheckBox x:Name="chkAlarmCUD"          Content="Dodavanje/uklanjanje alarma"     Margin="0,5"/>
+            <CheckBox x:Name="chkAlarmAck"          Content="Acknowledge alarma"              Margin="0,5"/>
+            <CheckBox x:Name="chkImportExport"      Content="Import/Export konfiguracije"     Margin="0,5"/>
+            <CheckBox x:Name="chkLogin"             Content="Login/Logout"                    Margin="0,5"/>
+            <CheckBox x:Name="chkError"             Content="Greška/izuzetak"                 Margin="0,5"/>
+        </StackPanel>
+
+        <TextBlock Grid.Row="2" x:Name="txtTraceWord"
+                   Foreground="Gray" FontSize="11" Margin="0,10,0,4"/>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal"
+                    HorizontalAlignment="Right" Margin="0,8,0,0">
+            <Button Content="Sačuvaj" Width="90" Height="30"
+                    Margin="0,0,10,0" Click="BtnSave_Click"/>
+            <Button Content="Otkaži"  Width="90" Height="30"
+                    Click="BtnCancel_Click"/>
+        </StackPanel>
+    </Grid>
+</Window>
