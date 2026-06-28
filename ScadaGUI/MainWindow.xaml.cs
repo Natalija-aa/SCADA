@@ -188,7 +188,7 @@ namespace ScadaGUI
             refreshTimer?.Stop();
             foreach (var ai in ContextClass.Instance.Tags.OfType<AnalogInput>()) ai.StopScan();
             foreach (var di in ContextClass.Instance.Tags.OfType<DigitalInput>()) di.StopScan();
-            PLC.instance?.Stop();
+            PLC.StopSimulator();
             ContextClass.Instance.SaveChanges();
             ContextClass.Instance.Dispose();
         }

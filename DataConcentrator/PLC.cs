@@ -1,27 +1,27 @@
-﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using PLCSimulator;
 
 namespace DataConcentrator
 {
     public class PLC
     {
-        public static PLCSimulatorManager instance;
-
-        public static Dictionary<string, Thread> tagThreads = new Dictionary<string, Thread>();
+        private static PLCSimulatorManager instance;
+        private static readonly object instanceLock = new object();
 
         public static PLCSimulatorManager Instance
         {
             get
             {
-                if (instance == null)
+                if (instance == null)   // nema simulatora
                 {
-                    instance = new PLCSimulatorManager();
-                    instance.StartPLCSimulator();
+                    lock (instanceLock)   
+                    {
+                        if (instance == null)   // dvostruka provjera - drugi thread mogao kreirati dok smo cekali lock
+                        {
+                            instance = new PLCSimulatorManager();
+                            instance.StartPLCSimulator();
+                        }
+                    }
                 }
                 return instance;
             }
@@ -30,9 +30,9 @@ namespace DataConcentrator
         public static IEnumerable<string> GetAddressesForType(string tagType)
             => Instance.GetAddressesForType(tagType);
 
-        public void StopSimulator()
+        public static void StopSimulator()
         {
-            instance.Stop();
+            instance?.Stop();   // ?. stiti od null ako simulator nikad nije pokrenut
         }
     }
 }
