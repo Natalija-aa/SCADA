@@ -9,11 +9,11 @@ namespace ScadaGUI
 {
     public partial class AddWindow : Window
     {
-        private TextBox txtName, txtDesc, txtAddr, txtScanTime, txtLowLimit,
+        private TextBox txtName, txtDesc, txtScanTime, txtLowLimit,
                         txtHighLimit, txtUnits, txtDeadband, txtHysteresis,
                         txtInitVal, txtAlarmMsg, txtAlarmLimit;
         private CheckBox chkScanning;
-        private ComboBox cmbAlarmTag, cmbAlarmDir;
+        private ComboBox cmbAddr, cmbAlarmTag, cmbAlarmDir;
 
         public bool TagAdded { get; private set; }
 
@@ -61,10 +61,10 @@ namespace ScadaGUI
         private void BuildFields(string type)
         {
             pnlFields.Children.Clear();
-            txtName = txtDesc = txtAddr = txtScanTime = txtLowLimit =
+            txtName = txtDesc = txtScanTime = txtLowLimit =
             txtHighLimit = txtUnits = txtDeadband = txtHysteresis =
             txtInitVal = txtAlarmMsg = txtAlarmLimit = null;
-            chkScanning = null; cmbAlarmTag = null; cmbAlarmDir = null;
+            chkScanning = null; cmbAddr = null; cmbAlarmTag = null; cmbAlarmDir = null;
 
             if (type == "Alarm")
             {
@@ -78,7 +78,9 @@ namespace ScadaGUI
 
             txtName = AddRow("Ime (ID):");
             txtDesc = AddRow("Opis:");
-            txtAddr = AddRow("I/O adresa:");
+
+            var addresses = DataConcentrator.PLC.GetAddressesForType(type);
+            cmbAddr = AddComboRow("I/O adresa:", addresses);
 
             if (type == "AI" || type == "DI")
             {
@@ -130,6 +132,9 @@ namespace ScadaGUI
                 if (string.IsNullOrWhiteSpace(txtName.Text)) { MessageBox.Show("Unesite ime taga."); return; }
                 if (ctx.Tags.Find(txtName.Text) != null) { MessageBox.Show("Tag sa tim imenom već postoji."); return; }
 
+                string ioAddress = cmbAddr?.SelectedItem?.ToString();
+                if (string.IsNullOrEmpty(ioAddress)) { MessageBox.Show("Odaberite I/O adresu."); return; }
+
                 Tag tag = null;
                 switch (type)
                 {
@@ -147,7 +152,7 @@ namespace ScadaGUI
                         tag = new AnalogInput
                         {
                             Name = txtName.Text, Description = txtDesc.Text,
-                            IOAddress = txtAddr.Text,
+                            IOAddress = ioAddress,
                             ScanTime = scanTime,
                             IsScanning = chkScanning.IsChecked == true,
                             LowLimit = low, HighLimit = high,
@@ -164,7 +169,7 @@ namespace ScadaGUI
                         tag = new AnalogOutput
                         {
                             Name = txtName.Text, Description = txtDesc.Text,
-                            IOAddress = txtAddr.Text,
+                            IOAddress = ioAddress,
                             InitialValue = double.Parse(txtInitVal.Text),
                             LowLimit = low, HighLimit = high,
                             Units = txtUnits.Text
@@ -175,11 +180,11 @@ namespace ScadaGUI
                     {
                         int scanTime = int.Parse(txtScanTime.Text);
                         if (scanTime <= 0) { MessageBox.Show("Scan time mora biti veći od 0."); return; }
-                        tag = new DigitalInput { Name = txtName.Text, Description = txtDesc.Text, IOAddress = txtAddr.Text, ScanTime = scanTime, IsScanning = chkScanning.IsChecked == true };
+                        tag = new DigitalInput { Name = txtName.Text, Description = txtDesc.Text, IOAddress = ioAddress, ScanTime = scanTime, IsScanning = chkScanning.IsChecked == true };
                         break;
                     }
                     case "DO":
-                        tag = new DigitalOutput { Name = txtName.Text, Description = txtDesc.Text, IOAddress = txtAddr.Text, InitialValue = double.Parse(txtInitVal.Text) };
+                        tag = new DigitalOutput { Name = txtName.Text, Description = txtDesc.Text, IOAddress = ioAddress, InitialValue = double.Parse(txtInitVal.Text) };
                         break;
                 }
 

@@ -27,10 +27,12 @@ namespace DataConcentrator
             }
         }
 
+        public static IEnumerable<string> GetAddressesForType(string tagType)
+            => Instance.GetAddressesForType(tagType);
+
         public void StopSimulator()
         {
-            instance.Abort();
+            instance.Stop();
         }
-         
     }
 }

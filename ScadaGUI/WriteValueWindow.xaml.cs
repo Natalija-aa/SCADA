@@ -28,13 +28,13 @@ namespace ScadaGUI
 
             if (tag is AnalogOutput ao)
             {
-                PLC.Instance.SetAnalogValue(ao.IOAddress, val);
+                PLC.Instance.SetValue(ao.IOAddress, val);
                 ao.InitialValue = val;
             }
             else if (tag is DigitalOutput dout)
             {
                 if (val != 0 && val != 1) { MessageBox.Show("Digitalni izlaz može biti samo 0 ili 1."); return; }
-                PLC.Instance.SetDigitalValue(dout.IOAddress, val);
+                PLC.Instance.SetValue(dout.IOAddress, val);
                 dout.InitialValue = val;
             }
 

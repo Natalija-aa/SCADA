@@ -36,7 +36,7 @@ namespace DataConcentrator.Model
             while (isRunning)
             {
                 Thread.Sleep(ScanTime > 0 ? ScanTime : 1000);
-                double newValue = PLC.Instance.GetAnalogValue(IOAddress);
+                double newValue = PLC.Instance.GetValue(IOAddress);
                 CurrentValue = newValue;
                 ValueChanged?.Invoke(Name, newValue);
             }
