@@ -134,6 +134,7 @@ namespace ScadaGUI
 
                 string ioAddress = cmbAddr?.SelectedItem?.ToString();
                 if (string.IsNullOrEmpty(ioAddress)) { MessageBox.Show("Odaberite I/O adresu."); return; }
+                if (ctx.Tags.Any(t => t.IOAddress == ioAddress)) { MessageBox.Show($"Adresa {ioAddress} je već dodijeljena drugom tagu."); return; }
 
                 Tag tag = null;
                 switch (type)

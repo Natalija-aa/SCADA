@@ -16,10 +16,12 @@ namespace DataConcentrator.Model
         public double Deadband { get; set; }
         public double Hysteresis { get; set; }
 
+        // virtual - lazy loading, ucitava kada trebaju alarmi
         public virtual ICollection<Alarm> Alarms { get; set; }
 
+        // ne cuvaj u bazi
         [NotMapped] public double CurrentValue { get; set; }
-        [NotMapped] private Thread scanThread;  // cita vrednosti bez blokiranja ostatka pprograma
+        [NotMapped] private Thread scanThread;  // cita vrednosti bez blokiranja ostatka programa
         [NotMapped] private bool isRunning;
 
         public event Action<string, double> ValueChanged;   // vrednoist se promenila vise od deadband-a

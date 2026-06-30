@@ -12,9 +12,10 @@ namespace PLCSimulator
     // 4 x DIGITAL OUTPUT: ADDR010, ADDR014 - ADDR016
     public class PLCSimulatorManager
     {
-        private Dictionary<string, double> addressValues;   // mapira se adresa u vrednost
-        private Dictionary<string, string> addressTypes;    // mapira adresu na tip (AI/AO/DI/DO)
-        private readonly object locker = new object();  // objekat za sinhronizaciju threadova
+        private Dictionary<string, double> addressValues;   // cuva trenutnu vrednost za adresu
+        private Dictionary<string, string> addressTypes;    // tip adrese (AI/AO/DI/DO)
+        private readonly object locker = new object();
+        // volatile - moze se promjeniti iz druge niti
         private volatile bool running = true;   // zastavica koju threadovi provjeravaju
         private Thread t1;  // generisati ce analogne ulaze
         private Thread t2;  // digitalne ulaze
@@ -55,6 +56,7 @@ namespace PLCSimulator
         public void StartPLCSimulator()
         {
             t1 = new Thread(GeneratingAnalogInputs) { IsBackground = true };
+            // IsBackground = True - zatvori se automatski kada se yatvori aplikacija
             t1.Start();
 
             t2 = new Thread(GeneratingDigitalInputs) { IsBackground = true };
@@ -98,7 +100,7 @@ namespace PLCSimulator
             }
         }
 
-        private void Toggle(string addr)
+        private void Toggle(string addr)  
         {
             addressValues[addr] = addressValues[addr] == 0 ? 1 : 0;
         }
@@ -111,7 +113,7 @@ namespace PLCSimulator
             }
         }
 
-        public void SetValue(string address, double value)
+        public void SetValue(string address, double value)  // kada se rucno zada vrednost
         {
             lock (locker)
             {
@@ -134,7 +136,7 @@ namespace PLCSimulator
 
         public void Stop()
         {
-            running = false;      // zavrse trenutrni krug i izadju
+            running = false;      // niti zavrse trenutrni krug i izadju
             t1?.Join(2000);       // max cekanje da nit nesto uradi(zavrsi krug)
             t2?.Join(2000);
         }
