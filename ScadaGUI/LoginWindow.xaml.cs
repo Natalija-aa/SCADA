@@ -18,6 +18,7 @@ namespace ScadaGUI
             string username = txtUsername.Text.Trim();
             string password = pwdPassword.Password;
 
+            // polja ne smiju biti prazna
             if (string.IsNullOrWhiteSpace(username))
             {
                 lblError.Text = "Unesite korisničko ime.";
@@ -34,6 +35,7 @@ namespace ScadaGUI
             Close();
         }
 
+        // ako se pritisne cance zatvara se aplikacija
         private void BtnCancel_Click(object sender, RoutedEventArgs e) => Close();
     }
 }
