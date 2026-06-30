@@ -8,6 +8,7 @@ namespace DataConcentrator
 {
     public static class ConfigurationService
     {
+        // izvozi sve tagve iz baze u JSON fajl
         public static void ExportToJson(string filePath)
         {
             var context = ContextClass.Instance;
@@ -49,6 +50,7 @@ namespace DataConcentrator
             var export = new ConfigurationExport { Tags = tags };
             var serializer = new DataContractJsonSerializer(typeof(ConfigurationExport));
 
+            // using - automatsji zatvara fajl stream na kraju bloka
             using (var stream = File.Open(filePath, FileMode.Create))
                 serializer.WriteObject(stream, export);
 
