@@ -5,9 +5,11 @@ namespace DataConcentrator
 {
     public class PLC
     {
+        // static- deli se izmedju svih objekata
         private static PLCSimulatorManager instance;
         private static readonly object instanceLock = new object();
 
+        // kreira simulator
         public static PLCSimulatorManager Instance
         {
             get
@@ -16,7 +18,7 @@ namespace DataConcentrator
                 {
                     lock (instanceLock)   
                     {
-                        if (instance == null)   // dvostruka provjera - drugi thread mogao kreirati dok smo cekali lock
+                        if (instance == null)   // dvostruka provjera - drugi thread mogao kreirati simulator dok smo cekali lock
                         {
                             instance = new PLCSimulatorManager();
                             instance.StartPLCSimulator();
