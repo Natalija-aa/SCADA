@@ -7,7 +7,6 @@ namespace DataConcentrator.Model
 {
     public class AnalogInput : Tag
     {
-        public string IOAddress { get; set; }
         public int ScanTime { get; set; }
         public bool IsScanning { get; set; }
         public double LowLimit { get; set; }

@@ -6,7 +6,6 @@ namespace DataConcentrator.Model
 {
     public class DigitalInput : Tag
     {
-        public string IOAddress { get; set; }
         public int ScanTime { get; set; }
         public bool IsScanning { get; set; }
 

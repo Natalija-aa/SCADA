@@ -22,6 +22,8 @@ namespace DataConcentrator
             set { description = value; OnPropertyChanged("Description"); }
         }
 
+        public string IOAddress { get; set; }
+
         public event PropertyChangedEventHandler PropertyChanged;   // prikaz u tabeli
 
         public void OnPropertyChanged(string property)  // salje obavjestenje svima koji su se pretplatili
