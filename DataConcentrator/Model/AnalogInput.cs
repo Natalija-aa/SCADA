@@ -45,10 +45,10 @@ namespace DataConcentrator.Model
 
         private void ScanLoop()
         {
-            double prevValue = double.MinValue;
+            double prevValue = double.MinValue; // kao marker da nije procitana vrednost
             while (isRunning)
             {
-                Thread.Sleep(ScanTime > 0 ? ScanTime : 1000);    // da ne bi procesor radio na 100% snage 
+                Thread.Sleep(ScanTime > 0 ? ScanTime : 1000);    // ako ScanTime < 0 - 1000ms da se ne optereti CPU
                 // ako je 0 spava 1s, inace za ScaningTime
                 double newValue = PLC.Instance.GetValue(IOAddress); // vrijednost sa zadate adrese
                 // da li je ovo prvo citanje ili da li je razlika veca od deadbanda

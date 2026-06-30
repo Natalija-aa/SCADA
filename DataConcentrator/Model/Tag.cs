@@ -8,8 +8,9 @@ namespace DataConcentrator
         private string name;
         private string description;
 
-        [Key]
-        public string Name  // primarni kljuc Entity Framewourk
+        [Key]   // primarni kljuc u bazi podataka
+        // ne mogu postojati 2 taga sa istim imenom
+        public string Name  
         {
             get { return name; }
             set { name = value; OnPropertyChanged("Name"); }
@@ -21,9 +22,9 @@ namespace DataConcentrator
             set { description = value; OnPropertyChanged("Description"); }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler PropertyChanged;   // prikaz u tabeli
 
-        public void OnPropertyChanged(string property)  // salje obavjestenje
+        public void OnPropertyChanged(string property)  // salje obavjestenje svima koji su se pretplatili
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
