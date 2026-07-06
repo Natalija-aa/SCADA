@@ -57,8 +57,13 @@ namespace DataConcentrator
             Logger.Log(Logger.LogType.ImportExport, $"Configuration exported to {filePath} ({tags.Count} tags)");
         }
 
-        public static void ImportFromJson(string filePath)
+        // vraca novododate ulazne tagove (AI/DI) da bi pozivalac mogao da pokrene
+        // njihovo skeniranje (StartTag) - inace ostaju "IsScanning=true" u bazi
+        // a nikad se stvarno ne pokrenu dok se app ne restartuje
+        public static List<Tag> ImportFromJson(string filePath)
         {
+            var newlyAddedInputs = new List<Tag>();
+
             var serializer = new DataContractJsonSerializer(typeof(ConfigurationExport));
             ConfigurationExport export;
 
@@ -67,7 +72,7 @@ namespace DataConcentrator
                 export = (ConfigurationExport)serializer.ReadObject(stream);
 
             if (export?.Tags == null)
-                return;
+                return newlyAddedInputs;
 
             var context = ContextClass.Instance;
 
@@ -77,14 +82,18 @@ namespace DataConcentrator
                 {
                     case "AI":
                         if (context.Tags.OfType<AnalogInput>().FirstOrDefault(t => t.Name == dto.Name) == null)
-                            context.Tags.Add(new AnalogInput
+                        {
+                            var ai = new AnalogInput
                             {
                                 Name = dto.Name, Description = dto.Description,
                                 IOAddress = dto.IOAddress, ScanTime = dto.ScanTime,
                                 IsScanning = dto.IsScanning, LowLimit = dto.LowLimit,
                                 HighLimit = dto.HighLimit, Units = dto.Units,
                                 Deadband = dto.Deadband, Hysteresis = dto.Hysteresis
-                            });
+                            };
+                            context.Tags.Add(ai);
+                            newlyAddedInputs.Add(ai);
+                        }
                         break;
 
                     case "AO":
@@ -99,12 +108,16 @@ namespace DataConcentrator
 
                     case "DI":
                         if (context.Tags.OfType<DigitalInput>().FirstOrDefault(t => t.Name == dto.Name) == null)
-                            context.Tags.Add(new DigitalInput
+                        {
+                            var di = new DigitalInput
                             {
                                 Name = dto.Name, Description = dto.Description,
                                 IOAddress = dto.IOAddress, ScanTime = dto.ScanTime,
                                 IsScanning = dto.IsScanning
-                            });
+                            };
+                            context.Tags.Add(di);
+                            newlyAddedInputs.Add(di);
+                        }
                         break;
 
                     case "DO":
@@ -120,6 +133,7 @@ namespace DataConcentrator
 
             context.SaveChanges();
             Logger.Log(Logger.LogType.ImportExport, $"Configuration imported from {filePath} ({export.Tags.Count} tags)");
+            return newlyAddedInputs;
         }
     }
 }

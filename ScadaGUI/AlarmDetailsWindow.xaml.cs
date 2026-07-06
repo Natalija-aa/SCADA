@@ -63,12 +63,21 @@ namespace ScadaGUI
             using (var ctx = ContextClass.CreateNew())
             {
                 var alarm = ctx.Alarms.Find(id);
-                if (alarm != null)
+                if (alarm == null) return;
+
+                // ne dozvoli brisanje dok je alarm Active - time bi nestala signalizacija
+                // da je proces van granica, a da stanje nije ni potvrdjeno ni razresen
+                if (alarm.State == AlarmState.Active)
                 {
-                    ctx.Alarms.Remove(alarm);
-                    ctx.SaveChanges();
-                    Logger.Log(Logger.LogType.AlarmCUD, $"Obrisan alarm {id} sa taga {tagName}");
+                    MessageBox.Show(
+                        "Alarm je trenutno aktivan (Active). Prvo ga acknowledge-ujte, ili sacekajte da se stanje vrati u normalu, pa tek onda obrisite.",
+                        "Brisanje nije dozvoljeno", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
                 }
+
+                ctx.Alarms.Remove(alarm);
+                ctx.SaveChanges();
+                Logger.Log(Logger.LogType.AlarmCUD, $"Obrisan alarm {id} sa taga {tagName}");
             }
             Refresh();
         }

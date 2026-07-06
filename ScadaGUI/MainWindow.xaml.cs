@@ -46,6 +46,8 @@ namespace ScadaGUI
                 else if (vm.Tag is DigitalInput di) vm.CurrentValue = di.CurrentValue;
                 else if (vm.Tag is AnalogOutput ao) vm.CurrentValue = ao.InitialValue;
                 else if (vm.Tag is DigitalOutput dout) vm.CurrentValue = dout.InitialValue;
+
+                if (vm.IsInput) vm.RefreshScanState();
             }
 
             using (var ctx = ContextClass.CreateNew())
@@ -166,7 +168,14 @@ namespace ScadaGUI
             if (dlg.ShowDialog() != true) return;
             try
             {
-                ConfigurationService.ImportFromJson(dlg.FileName);
+                var newInputs = ConfigurationService.ImportFromJson(dlg.FileName);
+                foreach (var tag in newInputs)
+                {
+                    if (tag is AnalogInput ai && ai.IsScanning)
+                        DataConcentratorManager.Instance.StartTag(ai);
+                    else if (tag is DigitalInput di && di.IsScanning)
+                        DataConcentratorManager.Instance.StartTag(di);
+                }
                 LoadTags();
                 MessageBox.Show("Konfiguracija importovana.");
             }
@@ -186,6 +195,7 @@ namespace ScadaGUI
         {
             Logger.Log(Logger.LogType.Login, "Korisnik se odjavio (zatvaranje aplikacije).");
             refreshTimer?.Stop();
+            DataConcentratorManager.Instance.Shutdown();
             foreach (var ai in ContextClass.Instance.Tags.OfType<AnalogInput>()) ai.StopScan();
             foreach (var di in ContextClass.Instance.Tags.OfType<DigitalInput>()) di.StopScan();
             PLC.StopSimulator();

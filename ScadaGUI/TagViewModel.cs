@@ -43,6 +43,10 @@ namespace ScadaGUI
             }
         }
 
+        // IsScanning se menja iz pozadinske niti (StartScan/StopScan), pa se dugme
+        // Scan ON/OFF ne osvjezava samo od sebe - ovo se zove iz refresh tajmera
+        public void RefreshScanState() => OnPropertyChanged(nameof(ScanBtnText));
+
         public TagViewModel(Tag tag)
         {
             Tag = tag;

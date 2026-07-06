@@ -79,7 +79,9 @@ namespace ScadaGUI
             txtName = AddRow("Ime (ID):");
             txtDesc = AddRow("Opis:");
 
-            var addresses = DataConcentrator.PLC.GetAddressesForType(type);
+            // ne prikazuj adrese koje su vec dodijeljene nekom tagu, dok se taj tag ne obrise
+            var usedAddresses = ContextClass.Instance.Tags.Select(t => t.IOAddress).ToHashSet();
+            var addresses = DataConcentrator.PLC.GetAddressesForType(type).Where(a => !usedAddresses.Contains(a));
             cmbAddr = AddComboRow("I/O adresa:", addresses);
 
             if (type == "AI" || type == "DI")
@@ -129,8 +131,15 @@ namespace ScadaGUI
                     return;
                 }
 
-                if (string.IsNullOrWhiteSpace(txtName.Text)) { MessageBox.Show("Unesite ime taga."); return; }
-                if (ctx.Tags.Find(txtName.Text) != null) { MessageBox.Show("Tag sa tim imenom već postoji."); return; }
+                string tagNameInput = txtName.Text.Trim();
+                if (string.IsNullOrWhiteSpace(tagNameInput)) { MessageBox.Show("Unesite ime taga."); return; }
+                if (tagNameInput.Length > 50) { MessageBox.Show("Ime taga može imati najviše 50 karaktera."); return; }
+                if (!System.Text.RegularExpressions.Regex.IsMatch(tagNameInput, @"^[A-Za-z][A-Za-z0-9_]*$"))
+                {
+                    MessageBox.Show("Ime taga mora počinjati slovom i sadržati samo slova, brojeve i donju crtu (bez razmaka i specijalnih znakova).");
+                    return;
+                }
+                if (ctx.Tags.Find(tagNameInput) != null) { MessageBox.Show("Tag sa tim imenom već postoji."); return; }
 
                 string ioAddress = cmbAddr?.SelectedItem?.ToString();
                 if (string.IsNullOrEmpty(ioAddress)) { MessageBox.Show("Odaberite I/O adresu."); return; }
@@ -152,7 +161,7 @@ namespace ScadaGUI
                         if (hysteresis < 0) { MessageBox.Show("Hysteresis ne može biti negativan."); return; }
                         tag = new AnalogInput
                         {
-                            Name = txtName.Text, Description = txtDesc.Text,
+                            Name = tagNameInput, Description = txtDesc.Text,
                             IOAddress = ioAddress,
                             ScanTime = scanTime,
                             IsScanning = chkScanning.IsChecked == true,
@@ -169,7 +178,7 @@ namespace ScadaGUI
                         if (high <= low) { MessageBox.Show("High limit mora biti veći od Low limit."); return; }
                         tag = new AnalogOutput
                         {
-                            Name = txtName.Text, Description = txtDesc.Text,
+                            Name = tagNameInput, Description = txtDesc.Text,
                             IOAddress = ioAddress,
                             InitialValue = double.Parse(txtInitVal.Text),
                             LowLimit = low, HighLimit = high,
@@ -181,12 +190,16 @@ namespace ScadaGUI
                     {
                         int scanTime = int.Parse(txtScanTime.Text);
                         if (scanTime <= 0) { MessageBox.Show("Scan time mora biti veći od 0."); return; }
-                        tag = new DigitalInput { Name = txtName.Text, Description = txtDesc.Text, IOAddress = ioAddress, ScanTime = scanTime, IsScanning = chkScanning.IsChecked == true };
+                        tag = new DigitalInput { Name = tagNameInput, Description = txtDesc.Text, IOAddress = ioAddress, ScanTime = scanTime, IsScanning = chkScanning.IsChecked == true };
                         break;
                     }
                     case "DO":
-                        tag = new DigitalOutput { Name = txtName.Text, Description = txtDesc.Text, IOAddress = ioAddress, InitialValue = double.Parse(txtInitVal.Text) };
+                    {
+                        double initVal = double.Parse(txtInitVal.Text);
+                        if (initVal != 0 && initVal != 1) { MessageBox.Show("Digitalni izlaz može biti samo 0 ili 1."); return; }
+                        tag = new DigitalOutput { Name = tagNameInput, Description = txtDesc.Text, IOAddress = ioAddress, InitialValue = initVal };
                         break;
+                    }
                 }
 
                 ctx.Tags.Add(tag);

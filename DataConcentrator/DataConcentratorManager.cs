@@ -18,6 +18,14 @@ namespace DataConcentrator
         private readonly object historyLock = new object();
         private Action<Action> dispatcher;
 
+        // pozadinske niti za skeniranje mogu jos malo raditi i posle StopScan()
+        // (StopScan samo postavi flag, ne ceka da se nit zaista ugasi), pa moze
+        // da stigne poziv CheckAlarms bas kad se glavni prozor zatvara i ContextClass.Instance
+        // se vec dispose-uje - ovaj flag i try/catch ispod to sprecavaju da obore aplikaciju
+        private volatile bool isShuttingDown;
+
+        public void Shutdown() => isShuttingDown = true;
+
         public void Initialize(Action<Action> uiDispatcher)
         {
             dispatcher = uiDispatcher;
@@ -25,6 +33,7 @@ namespace DataConcentrator
 
             foreach (var ai in context.Tags.OfType<AnalogInput>().ToList())
             {
+                ai.ValueChanged -= OnAIValueChanged;
                 ai.ValueChanged += OnAIValueChanged;
                 if (ai.IsScanning) ai.StartScan();
             }
@@ -37,6 +46,9 @@ namespace DataConcentrator
 
         public void StartTag(AnalogInput ai)
         {
+            // -= pa += da se izbjegne dupla pretplata ako se StartTag pozove vise puta
+            // nad istim tagom (npr. Scan OFF pa ponovo Scan ON)
+            ai.ValueChanged -= OnAIValueChanged;
             ai.ValueChanged += OnAIValueChanged;
             ai.StartScan();
         }
@@ -49,6 +61,20 @@ namespace DataConcentrator
         }
 
         private void CheckAlarms(string tagName, double value)
+        {
+            if (isShuttingDown) return;
+
+            try
+            {
+                CheckAlarmsCore(tagName, value);
+            }
+            catch (InvalidOperationException)
+            {
+                // aplikacija se u medjuvremenu zatvorila i kontekst je dispose-ovan - bezopasno preskoci
+            }
+        }
+
+        private void CheckAlarmsCore(string tagName, double value)
         {
             using (var ctx = ContextClass.CreateNew())
             {

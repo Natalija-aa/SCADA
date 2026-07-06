@@ -17,7 +17,14 @@ namespace DataConcentrator
             Error            = 64   //greska u aplikaciji
         }
 
-        private static int traceWord = 0;   // nista se ne loguje
+        private const int AllLogTypes =
+            (int)LogType.TagCUD | (int)LogType.TagUpdate | (int)LogType.AlarmCUD |
+            (int)LogType.AlarmAcknowledge | (int)LogType.ImportExport | (int)LogType.Login | (int)LogType.Error;
+
+        // po defaultu se loguje sve (osnovni zahtjev: svaka akcija se cuva u system.log)
+        // ako vec postoji traceword.cfg, ta vrednost ce ga prepisati u LoadTraceWord()
+        private static int traceWord = AllLogTypes;
+
         private static readonly string LogPath = "system.log";
         private static readonly string TraceWordPath = "traceword.cfg";
         private static readonly object Locker = new object();
