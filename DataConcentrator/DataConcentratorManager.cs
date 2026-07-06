@@ -31,6 +31,7 @@ namespace DataConcentrator
             dispatcher = uiDispatcher;
             var context = ContextClass.Instance;
 
+            // -= pa += sprecava duplu pretplatu ako se Initialize pozove vise puta
             foreach (var ai in context.Tags.OfType<AnalogInput>().ToList())
             {
                 ai.ValueChanged -= OnAIValueChanged;
@@ -57,6 +58,7 @@ namespace DataConcentrator
 
         private void OnAIValueChanged(string tagName, double value)
         {
+            // CheckAlarms se mora izvrsiti na UI niti jer koristi EF kontekst
             dispatcher?.Invoke(() => CheckAlarms(tagName, value));
         }
 
@@ -88,6 +90,7 @@ namespace DataConcentrator
                         ? value > alarm.LimitValue
                         : value < alarm.LimitValue;
 
+                    // histerezis sprecava treperenje alarma kada je vrednost tik uz granicu
                     bool conditionCleared = alarm.TriggerAbove
                         ? value < (alarm.LimitValue - hysteresis)
                         : value > (alarm.LimitValue + hysteresis);
@@ -116,6 +119,7 @@ namespace DataConcentrator
                 }
             }
 
+            // belezi vrednosti blizu sredine opsega za izvestaje
             var ai = ContextClass.Instance.Tags.OfType<AnalogInput>().FirstOrDefault(t => t.Name == tagName);
             if (ai != null)
             {
