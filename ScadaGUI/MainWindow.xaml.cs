@@ -168,8 +168,8 @@ namespace ScadaGUI
             if (dlg.ShowDialog() != true) return;
             try
             {
-                var newInputs = ConfigurationService.ImportFromJson(dlg.FileName);
-                foreach (var tag in newInputs)
+                var result = ConfigurationService.ImportFromJson(dlg.FileName);
+                foreach (var tag in result.NewlyAddedInputs)
                 {
                     if (tag is AnalogInput ai && ai.IsScanning)
                         DataConcentratorManager.Instance.StartTag(ai);
@@ -177,7 +177,11 @@ namespace ScadaGUI
                         DataConcentratorManager.Instance.StartTag(di);
                 }
                 LoadTags();
-                MessageBox.Show("Konfiguracija importovana.");
+
+                string message = $"Uvezeno tagova: {result.Imported}.";
+                if (result.Skipped.Count > 0)
+                    message += $"\nPreskočeno ({result.Skipped.Count}):\n" + string.Join("\n", result.Skipped);
+                MessageBox.Show(message);
             }
             catch (Exception ex)
             {

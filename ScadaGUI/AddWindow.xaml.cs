@@ -176,11 +176,13 @@ namespace ScadaGUI
                         double low = double.Parse(txtLowLimit.Text);
                         double high = double.Parse(txtHighLimit.Text);
                         if (high <= low) { MessageBox.Show("High limit mora biti veći od Low limit."); return; }
+                        double initVal = double.Parse(txtInitVal.Text);
+                        if (initVal < low || initVal > high) { MessageBox.Show("Initial value mora biti u opsegu [Low limit, High limit]."); return; }
                         tag = new AnalogOutput
                         {
                             Name = tagNameInput, Description = txtDesc.Text,
                             IOAddress = ioAddress,
-                            InitialValue = double.Parse(txtInitVal.Text),
+                            InitialValue = initVal,
                             LowLimit = low, HighLimit = high,
                             Units = txtUnits.Text
                         };

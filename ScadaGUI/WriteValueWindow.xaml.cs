@@ -28,6 +28,11 @@ namespace ScadaGUI
 
             if (tag is AnalogOutput ao)
             {
+                if (val < ao.LowLimit || val > ao.HighLimit)
+                {
+                    MessageBox.Show($"Vrednost mora biti u opsegu [{ao.LowLimit}, {ao.HighLimit}].");
+                    return;
+                }
                 PLC.Instance.SetValue(ao.IOAddress, val);
                 ao.InitialValue = val;
             }
