@@ -78,8 +78,9 @@ namespace ScadaGUI
         private void BtnAdd_Click(object sender, RoutedEventArgs e)
         {
             var win = new AddWindow { Owner = this };
-            win.ShowDialog();
-            if (win.TagAdded) LoadTags();
+            // Show (ne ShowDialog) da glavni prozor ostane dostupan dok je Add otvoren
+            win.Closed += (s, args) => { if (win.TagAdded) LoadTags(); };
+            win.Show();
         }
 
         private void BtnDeleteTag_Click(object sender, RoutedEventArgs e)
@@ -102,7 +103,8 @@ namespace ScadaGUI
         {
             var vm = (sender as FrameworkElement)?.Tag as TagViewModel;
             if (vm == null) return;
-            new AlarmDetailsWindow(vm.Name) { Owner = this }.ShowDialog();
+            // Show (ne ShowDialog) da se moze slobodno prelaziti izmedju ovog i glavnog prozora
+            new AlarmDetailsWindow(vm.Name) { Owner = this }.Show();
         }
 
         private void BtnWrite_Click(object sender, RoutedEventArgs e)

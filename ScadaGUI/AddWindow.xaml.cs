@@ -145,6 +145,23 @@ namespace ScadaGUI
                 if (string.IsNullOrEmpty(ioAddress)) { MessageBox.Show("Odaberite I/O adresu."); return; }
                 if (ctx.Tags.Any(t => t.IOAddress == ioAddress)) { MessageBox.Show($"Adresa {ioAddress} je već dodijeljena drugom tagu."); return; }
 
+                if (txtUnits != null)
+                {
+                    string units = txtUnits.Text.Trim();
+                    if (units.Length > UnitsValidator.MaxLength)
+                    {
+                        MessageBox.Show($"Jedinice mogu imati najviše {UnitsValidator.MaxLength} karaktera.");
+                        return;
+                    }
+                    if (!UnitsValidator.IsValid(units))
+                    {
+                        MessageBox.Show("Nedozvoljena jedinica. Dozvoljene vrijednosti: " +
+                            string.Join(", ", UnitsValidator.AllowedUnits.Where(u => u != "")));
+                        return;
+                    }
+                    txtUnits.Text = units;
+                }
+
                 Tag tag = null;
                 switch (type)
                 {
