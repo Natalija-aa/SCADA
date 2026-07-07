@@ -54,6 +54,7 @@
   <ItemGroup>
     <Compile Include="ContextClass.cs" />
     <Compile Include="ConfigurationService.cs" />
+    <Compile Include="UnitsValidator.cs" />
     <Compile Include="DataConcentratorManager.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="TagExportModel.cs" />

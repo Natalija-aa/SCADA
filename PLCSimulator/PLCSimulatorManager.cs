@@ -56,7 +56,7 @@ namespace PLCSimulator
         public void StartPLCSimulator()
         {
             t1 = new Thread(GeneratingAnalogInputs) { IsBackground = true };
-            // IsBackground = True - zatvori se automatski kada se yatvori aplikacija
+            // IsBackground = True - zatvori se automatski kada se zatvori aplikacija
             t1.Start();
 
             t2 = new Thread(GeneratingDigitalInputs) { IsBackground = true };
@@ -65,12 +65,12 @@ namespace PLCSimulator
 
         private void GeneratingAnalogInputs()
         {
-            while (running)   // umjesto while(true) - petlja gleda zastavicu
+            while (running)
             {
                 Thread.Sleep(100);
                 lock (locker) // dictionary nije thread-safe
                 {
-                    // oscilatorni signal [-100, 100] - pritisak, vibracije
+                    // oscilatorni signal [0, 100] - pritisak, vibracije
                     addressValues["ADDR001"] = 100 * Math.Sin((double)DateTime.Now.Second / 60 * Math.PI);
 
                     // linearno rastuci signal [0, 98], punjenje rezervoara

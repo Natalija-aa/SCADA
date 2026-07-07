@@ -134,7 +134,7 @@ namespace DataConcentrator
                 string error = Validate(dto, usedNames, usedAddresses);
                 if (error != null)
                 {
-                    // zabeleži preskoceni tag sa razlogom i nastavi sa sledecim
+                    // zabelezi preskoceni tag sa razlogom i nastavi sa sledecim
                     result.Skipped.Add($"{dto.Name} ({dto.Type}): {error}");
                     continue;
                 }
@@ -194,14 +194,14 @@ namespace DataConcentrator
                         break;
 
                     default:
-                        // nepoznat tip - preskoci i zabeleži
+                        // nepoznat tip - preskoci i zabelezi
                         result.Skipped.Add($"{dto.Name}: nepoznat tip taga '{dto.Type}'");
                         continue;
                 }
 
                 context.Tags.Add(tag);
 
-                // ažuriraj skupove da sledeci tag u JSON fajlu ne dobije isti naziv/adresu
+                // azuriraj skupove da sledeci tag u JSON fajlu ne dobije isti naziv/adresu
                 usedNames.Add(dto.Name);
                 usedAddresses.Add(dto.IOAddress);
                 result.Imported++;
@@ -243,12 +243,14 @@ namespace DataConcentrator
                     if (dto.HighLimit <= dto.LowLimit) return "high limit mora biti veći od low limit";
                     if (dto.Deadband < 0) return "deadband ne može biti negativan";
                     if (dto.Hysteresis < 0) return "hysteresis ne može biti negativan";
+                    if (!UnitsValidator.IsValid(dto.Units)) return "neispravna jedinica";
                     return null;    // sve proslo - tag je validan
 
                 case "AO":
                     if (dto.HighLimit <= dto.LowLimit) return "high limit mora biti veći od low limit";
                     // initial value mora biti unutar zadatog opsega
                     if (dto.InitialValue < dto.LowLimit || dto.InitialValue > dto.HighLimit) return "initial value van opsega low/high limit";
+                    if (!UnitsValidator.IsValid(dto.Units)) return "neispravna jedinica";
                     return null;
 
                 case "DI":
